@@ -1,1 +1,34 @@
-
+properties([parameters([choice(choices: ['BUILD_NUMBER'], name: 'ENV')])])
+pipeline{
+    agent {
+        label 'ci-node'
+    }
+    
+    stages{
+        stage("Git Checkout"){
+            steps{
+                git credentialsId: 'github token', url: 'https://github.com/Naveengithub11/onelinebook.git'
+            }
+        }
+        stage("Build Code"){
+            steps{
+                sh "mvn clean package"
+            }
+        }
+        stage("Docker Build"){
+            steps{
+                sh "docker build -t naveendc11/onlinebook:${BUILD_NUMBER} ."
+            }
+        }
+        stage("Docker Push"){
+            steps{
+                sh "docker push naveendc11/onlinebook:${BUILD_NUMBER}"
+            }
+        }
+        stage("Initiate CD"){
+            steps{
+                build job: "/webook/onlinebook-CD/", parameters: [string(name: 'ENV', value: "${BUILD_NUMBER}")]
+            }
+        }
+    } 
+}
