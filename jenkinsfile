@@ -27,7 +27,7 @@ pipeline{
         }
         stage("Initiate CD"){
             steps{
-                build job: "/webook/onlinebook-CD/", parameters: [string(name: 'ENV', value: "${BUILD_NUMBER}")]
+                build job: "/webook/onlinebook-CD/", parameters: [string(name: 'ENV', value: "${params.env}")]
             }
         }
     } 
